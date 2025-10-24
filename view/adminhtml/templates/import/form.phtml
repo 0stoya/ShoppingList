@@ -1,0 +1,45 @@
+<?php
+/** @var \TR\ShoppingList\Block\Adminhtml\Import\Form $block */
+$validateUrl = $block->escapeUrl($block->getUrl('*/*/validate'));
+$importUrl = $block->escapeUrl($block->getUrl('*/*/import'));
+?>
+<form class="entry-edit form-inline" method="post" id="import_form" action="<?= $importUrl ?>" enctype="multipart/form-data">
+    <fieldset class="admin__fieldset">
+        <legend class="admin__legend"><span><?= $block->escapeHtml(__('Import Shopping Lists')) ?></span></legend>
+        <div class="admin__field">
+            <label class="admin__field-label" for="import_file">
+                <span><?= $block->escapeHtml(__('Upload CSV File')) ?></span>
+            </label>
+            <div class="admin__field-control">
+                <input type="file" id="import_file" name="import_file" required="required" class="admin__control-file" />
+            </div>
+            <div class="admin__field-note">
+                <span><?= $block->escapeHtml(__('Required columns: customer_email, list_name, sku, qty')) ?></span>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="page-actions">
+        <?= $block->getBlockHtml('formkey') ?>
+        
+        <button id="validate_button" type="button" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('Validate File')) ?>">
+            <span><?= $block->escapeHtml(__('Validate File')) ?></span>
+        </button>
+        <button id="import_button" type="submit" class="action-primary" title="<?= $block->escapeHtmlAttr(__('Import')) ?>">
+            <span><?= $block->escapeHtml(__('Import')) ?></span>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        $('#validate_button').on('click', function() {
+            // Set the form's action to the validate URL and submit
+            $('#import_form').attr('action', '<?= $validateUrl ?>').submit();
+        });
+        $('#import_button').on('click', function() {
+            // Ensure the form's action is the import URL and submit
+            $('#import_form').attr('action', '<?= $importUrl ?>').submit();
+        });
+    });
+</script>

@@ -1,0 +1,22 @@
+.shopping-list-items {
+    width: 1090px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+.shopping-list-item {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 4px;
+    background: #fff;
+}
+.shopping-list-item h3 {
+    margin: 0 0 8px;
+    font-size: 1.1em;
+}
+.shopping-list-item .actions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+}

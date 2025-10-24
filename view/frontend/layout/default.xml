@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="TR_ShoppingList::css/styles.css" />
+         <css src="TR_ShoppingList::css/list.css" />
+    </head>
+<body>
+        <referenceBlock name="header.links">
+            <block class="TR\ShoppingList\Block\HeaderLink"
+                   name="tr_shoppinglist_header_link"
+                   after="-">
+                <arguments>
+                    <argument name="label" xsi:type="string">My Shopping List</argument>
+                    <argument name="path" xsi:type="string">shoppinglist/index/index</argument>
+                    <argument name="class" xsi:type="string">tr-shopping-list-header-link</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

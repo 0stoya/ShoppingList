@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="TR_ShoppingList::import"
+             title="Import Shopping Lists"
+             module="TR_ShoppingList"
+             sortOrder="90"
+             action="shoppinglist/import"
+             resource="TR_ShoppingList::import"/>
+    </menu>
+</config>

@@ -1,0 +1,288 @@
+.shopping-lists {
+    margin: 20px;
+}
+.shopping-list {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    background: #fff;
+}
+.shopping-list h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #e3e3e3;
+    padding-bottom: 10px;
+}
+.shopping-list table {
+    width: 100%;
+}
+.shopping-list table th,
+.shopping-list table td {
+    padding: 8px;
+}
+.toolbar-amount {
+    display: block;
+    line-height: 26px;
+    margin: 0;
+    padding: 8px 0 0;
+}
+
+/* toolbar */
+.tr-shopping-list-view .pages .action.next:before {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 46px;
+    line-height: inherit;
+    color: #7d7d7d;
+    content: '\e608';
+    font-family: 'icons-blank-theme';
+    margin: 0 0 0 -6px;
+    vertical-align: top;
+    display: inline-block;
+    font-weight: normal;
+    overflow: hidden;
+    text-align: center;
+}
+.tr-shopping-list-view .pager { 
+width: 100% !important;
+    margin: 0 !important;
+    text-align: right;
+    border-top: solid 1px #ddd;
+    padding-top: 10px;
+    margin-bottom: 40px !important;
+}
+.tr-shopping-list-view .pages li.item {
+    border: solid 1px #ddd;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin: 5px;
+    padding: 0;
+    text-align: center;
+    line-height: 40px;
+    font-weight: 400;
+}
+.tr-shopping-list-view .pages li.item {
+    border: solid 1px #ddd;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin: 5px;
+    padding: 0;
+    text-align: center;
+    line-height: 40px;
+    font-weight: 400;
+}
+.tr-shopping-list-view .pages .items {
+    font-size: 0;
+    letter-spacing: -1px;
+    line-height: 0;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    list-style: none none;
+    display: inline-block;
+    font-weight: 700;
+}
+.tr-shopping-list-view .pages li.item a {
+    color: #222;
+    border: none;
+}
+.tr-shopping-list-view .account .column.main .toolbar {
+    display: none !important;
+}
+
+.tr-shopping-list-view #sorter {
+    width: 160px;
+    height: 40px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #CCCCCC;
+    padding: 4px 10px;
+    background: #fff;
+    color: #222;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.tr-shopping-list-view select#sorter:focus {
+    border-color: #4DAE65;
+}
+/* to verify */
+.tr-shopping-lists-modern {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #333;
+}
+
+/* Header Section */
+.tr-lists-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 2rem;
+}
+
+.tr-lists-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Create New List Form */
+.tr-create-list-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tr-list-input {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    min-width: 250px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tr-list-input:focus {
+    outline: none;
+    border-color: #2b7bb9;
+    box-shadow: 0 0 0 3px rgba(43, 123, 185, 0.2);
+}
+
+.tr-list-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #4dae65;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.tr-list-create-btn:hover {
+    background-color: #429b59;
+}
+
+.tr-list-create-btn:active {
+    transform: translateY(1px);
+}
+
+/* Grid for List Cards */
+.tr-lists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Individual List Card */
+.tr-list-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.tr-list-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    border-color: #c0c0c0;
+}
+
+/* The main link that wraps the icon and info */
+.tr-card-main-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    flex-grow: 1; /* Allows the link to take up all available space */
+}
+
+.tr-card-icon {
+    flex-shrink: 0;
+}
+
+.tr-card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.tr-card-title {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.tr-card-meta {
+    font-size: 0.1.5rem;
+    color: #777;
+    margin-top: 0.25rem;
+}
+
+/* Action buttons on the card */
+.tr-card-actions {
+    display: flex;
+    padding: 1.5rem;
+    padding-left: 0; /* No left padding as it's separated by content */
+    gap: 0.5rem;
+}
+
+.tr-btn {
+    display: inline-flex;
+    padding: 0.5rem;
+    border-radius: 50%;
+    color: #555;
+    background-color: transparent;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.tr-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.tr-btn-view:hover { color: #2b7bb9; }
+.tr-btn-delete:hover { color: #de5b62; }
+
+/* Empty List Message */
+.tr-lists-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1rem;
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    color: #777;
+}
+
+.tr-lists-empty svg {
+    margin-bottom: 1.5rem;
+}
+
+.tr-lists-empty span {
+    font-size: 1.1rem;
+    max-width: 400px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tr-lists-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -1,0 +1,39 @@
+<?php
+/** @var $block \TR\ShoppingList\Block\Index\Lists */
+$lists = $block->getLists();
+?>
+<div class="shopping-lists">
+    <?php if (count($lists)): ?>
+        <?php foreach ($lists as $list): ?>
+            <div class="shopping-list" data-list-id="<?php echo (int)$list->getId(); ?>">
+                <h2><?php echo $block->escapeHtml($list->getName()); ?></h2>
+                <?php $items = $list->getItems(); ?>
+                <?php if (count($items)): ?>
+                    <table class="data table table-striped">
+                        <thead>
+                            <tr>
+                                <th><?php echo __('SKU'); ?></th>
+                                <th><?php echo __('Product'); ?></th>
+                                <th><?php echo __('Qty'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($items as $item): ?>
+                                <?php $product = $item->getProduct(); ?>
+                                <tr>
+                                    <td><?php echo $block->escapeHtml($product->getSku()); ?></td>
+                                    <td><?php echo $block->escapeHtml($product->getName()); ?></td>
+                                    <td><?php echo (int)$item->getQty(); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p><?php echo __('No items in this list.'); ?></p>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p><?php echo __('No shopping lists found.'); ?></p>
+    <?php endif; ?>
+</div>

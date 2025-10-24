@@ -1,0 +1,44 @@
+<?php
+/** @var \TR\ShoppingList\Block\Edit $block */
+$list = $block->getShoppingList();
+?>
+<?php if ($list): // Check if the block returned a valid object (not false) ?>
+<form class="form-edit-list" action="<?= $block->escapeUrl($block->getFormAction()) ?>" method="post" id="form-validate">
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml($block->getHeader()) ?></span></legend><br>
+        <input name="form_key" type="hidden" value="<?= $block->escapeHtmlAttr($block->getFormKey()) ?>" />
+        <?php if ($list->getId()): ?>
+            <input name="id" type="hidden" value="<?= $block->escapeHtmlAttr($list->getId()) ?>" />
+        <?php endif; ?>
+        <div class="field list-name required">
+            <label for="list_name" class="label"><span><?= $block->escapeHtml(__('List Name')) ?></span></label>
+            <div class="control">
+                <input type="text" id="list_name" name="list_name" value="<?= $block->escapeHtmlAttr($list->getListName()) ?>" title="<?= $block->escapeHtmlAttr(__('List Name')) ?>" class="input-text" data-validate="{required:true}">
+            </div>
+        </div>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit" class="action save primary" title="<?= $block->escapeHtmlAttr(__('Save List')) ?>">
+                <span><?= $block->escapeHtml(__('Save List')) ?></span>
+            </button>
+        </div>
+        <div class="secondary">
+            <a class="action back" href="<?= $block->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $block->escapeHtml(__('Go Back')) ?></span>
+            </a>
+        </div>
+    </div>
+</form>
+<?php else: ?>
+    <div class="message error">
+        <div><?= $block->escapeHtml(__('The requested shopping list was not found or you do not have permission to view it.')) ?></div>
+    </div>
+    <div class="actions-toolbar">
+         <div class="secondary">
+            <a class="action back" href="<?= $block->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $block->escapeHtml(__('Back to My Shopping Lists')) ?></span>
+            </a>
+        </div>
+    </div>
+<?php endif; ?>

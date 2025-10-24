@@ -1,0 +1,97 @@
+<?php
+/**
+ * @var \TR\ShoppingList\Block\Lists $block
+ * @var \TR\ShoppingList\ViewModel\ListProvider $viewModel
+ */
+$viewModel = $block->getViewModel();
+$lists = $viewModel->getCustomerLists();
+?>
+<div class="tr-shopping-lists-modern">
+    <div class="tr-lists-header">
+        <h1><?= $block->escapeHtml(__('My Shopping Lists')) ?></h1>
+        
+        <form class="tr-create-list-form" id="tr-create-list-form" autocomplete="off">
+            <input type="hidden" name="form_key" value="<?= $block->escapeHtml($block->getFormKey()) ?>">
+            <input type="text" name="list_name" id="list_name" class="tr-list-input" placeholder="<?= $block->escapeHtmlAttr(__('Create a New List...')) ?>" required>
+            <button type="button" id="tr-create-list-submit-btn" class="tr-list-create-btn" title="<?= $block->escapeHtmlAttr(__('Create List')) ?>">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span><?= $block->escapeHtml(__('Create')) ?></span>
+            </button>
+        </form>
+    </div>
+
+    <div class="tr-lists-content">
+        <?php if ($lists && $lists->count()): ?>
+            <div class="tr-lists-grid">
+                <?php foreach ($lists as $list): ?>
+                    <div class="tr-list-card">
+                        <a href="<?= $block->escapeUrl($block->getUrl('shoppinglist/list/view', ['list_id' => $list->getId()])) ?>" class="tr-card-main-link">
+                            <div class="tr-card-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4dae65" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="tr-card-info">
+                                <span class="tr-card-title"><?= $block->escapeHtml($list->getListName()) ?></span>
+                                <span class="tr-card-meta"><?= $block->escapeHtml(__('%1 items', (int)$list->getItemsCount())) ?></span>
+                            </div>
+                        </a>
+                        <div class="tr-card-actions">
+                            <a href="<?= $block->escapeUrl($block->getUrl('shoppinglist/list/delete', ['list_id' => $list->getId()])) ?>" class="tr-btn tr-btn-delete" onclick="return confirm('<?= $block->escapeJs($block->escapeHtml(__('Are you sure you want to delete this list?'))) ?>')" title="<?= $block->escapeHtmlAttr(__('Delete')) ?>">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="tr-lists-empty">
+                <span><?= $block->escapeHtml(__('You have no shopping lists. Use the form above to create one!')) ?></span>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        'use strict';
+        
+        $('#tr-create-list-submit-btn').on('click', function() {
+            var form = $('#tr-create-list-form');
+            var listNameInput = form.find('#list_name');
+            var listName = listNameInput.val().trim();
+
+            if (!listName) {
+                alert('<?= $block->escapeJs(__('Please enter a list name.')) ?>');
+                listNameInput.focus();
+                return;
+            }
+
+            $.ajax({
+                url: '<?= $block->escapeUrl($block->getUrl("shoppinglist/list/save")) ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: form.serialize(),
+                showLoader: true
+            }).done(function(response) {
+                if (response.success) {
+                    // On success, simply reload the page to show the new list.
+                    // This is the simplest way to update the UI correctly.
+                    location.reload();
+                } else {
+                    alert(response.message || '<?= $block->escapeJs(__('Could not create list.')) ?>');
+                }
+            });
+        });
+    });
+</script>

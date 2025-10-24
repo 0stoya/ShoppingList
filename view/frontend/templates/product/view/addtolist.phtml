@@ -1,0 +1,120 @@
+<?php
+/**
+ * @var \TR\ShoppingList\Block\Product\View $block
+ * @var \TR\ShoppingList\ViewModel\ListProvider $viewModel
+ */
+$viewModel = $block->getViewModel();
+$lists = $viewModel->getCustomerLists();
+$product = $viewModel->getCurrentProduct();
+?>
+
+<!-- Trigger Button -->
+<div class="tr-shopping-list-modal-trigger">
+    <button type="button"
+            id="tr-open-list-modal-btn"
+            class="action primary"
+            title="<?= $block->escapeHtmlAttr(__('Add to shopping list')) ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="vertical-align:middle;margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="3" fill="white" />
+            <line x1="8" y1="9" x2="16" y2="9" />
+            <line x1="8" y1="13" x2="16" y2="13" />
+            <line x1="8" y1="17" x2="12" y2="17" />
+        </svg>
+        <?= $block->escapeHtml(__('Add to shopping list')) ?>
+    </button>
+</div>
+
+<!-- Modal Overlay -->
+<div id="tr-shopping-list-modal-overlay" style="display:none;position:fixed;z-index:10000;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);">
+    <div id="tr-shopping-list-modal"
+        style="background:#fff;max-width:380px;margin:8vh auto 0 auto;padding:2rem 1.5rem 1.5rem 1.5rem;border-radius:16px;box-shadow:0 12px 32px 0 rgba(0,0,0,0.13);position:relative;">
+        <button type="button"
+                id="tr-shopping-list-modal-close"
+                title="<?= $block->escapeHtmlAttr(__('Close')) ?>"
+                style="position:absolute;right:14px;top:10px;border:none;background:none;font-size:1.6rem;line-height:1.2;cursor:pointer;">
+            &times;
+        </button>
+        <h3 style="font-size:1.2rem;margin-bottom:1.2rem;">
+            <?= $block->escapeHtml(__('Add to Shopping List')) ?>
+        </h3>
+
+        <label for="tr-shopping-list-select-modal" style="font-weight:500;margin-bottom:0.3rem;display:block;">
+            <?= $block->escapeHtml(__('Choose a list')) ?>
+        </label>
+        <select id="tr-shopping-list-select-modal"
+                class="tr-shopping-list-select"
+                style="width:100%;margin-bottom:1.1rem;padding:7px 10px;border-radius:7px;border:1px solid #bbb;">
+            <option value=""><?= $block->escapeHtml(__('Select a shopping list')) ?></option>
+            <?php if ($lists && $lists->count()): ?>
+                <?php foreach ($lists as $list): ?>
+                    <option value="<?= $block->escapeHtmlAttr($list->getId()) ?>">
+                        <?= $block->escapeHtml($list->getListName()) ?>
+                    </option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option value=""><?= $block->escapeHtml(__('No shopping lists found')) ?></option>
+            <?php endif; ?>
+        </select>
+
+        <button type="button"
+                id="tr-add-to-shopping-list-btn-modal"
+                class="action primary"
+                title="<?= $block->escapeHtmlAttr(__('Add to shopping list')) ?>"
+                style="width:100%;margin-bottom:0.7rem;">
+            <?= $block->escapeHtml(__('Add')) ?>
+        </button>
+
+        <div id="tr-shopping-list-modal-message" style="display:none;margin-top:0.4rem;color:#008000;text-align:center;font-weight:500;"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+require(['jquery', 'Magento_Customer/js/customer-data'], function($, customerData) {
+    'use strict';
+
+    var productId = '<?= $block->escapeJs($product ? $product->getId() : '') ?>';
+    var formKey = '<?= $block->escapeJs($block->getFormKey()) ?>';
+    var addUrl = '<?= $block->escapeUrl($block->getUrl("shoppinglist/item/add")) ?>';
+
+    // Modal open/close
+    var $overlay = $('#tr-shopping-list-modal-overlay');
+    var $modal = $('#tr-shopping-list-modal');
+    $('#tr-open-list-modal-btn').on('click', function() {
+        $overlay.fadeIn(110);
+        $('#tr-shopping-list-modal-message').hide();
+        $('#tr-shopping-list-select-modal').val('');
+    });
+    $('#tr-shopping-list-modal-close, #tr-shopping-list-modal-overlay').on('click', function(e) {
+        if (e.target === this) $overlay.fadeOut(80);
+    });
+
+    // Add to shopping list logic
+    $('#tr-add-to-shopping-list-btn-modal').on('click', function() {
+        var listId = $('#tr-shopping-list-select-modal').val();
+        var $msg = $('#tr-shopping-list-modal-message');
+        if (!listId) {
+            $msg.text('<?= $block->escapeHtml(__('Please select a shopping list.')) ?>').css('color', '#c00').show();
+            return;
+        }
+        $.ajax({
+            url: addUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'list_id': listId,
+                'product_id': productId,
+                'qty': 1,
+                'form_key': formKey
+            },
+            showLoader: true
+        }).done(function(response) {
+            customerData.reload(['messages'], true);
+            $msg.text('<?= $block->escapeHtml(__('Added to your shopping list.')) ?>').css('color', '#008000').show();
+            setTimeout(function() { $overlay.fadeOut(80); }, 850);
+        });
+    });
+
+    // Prevent modal close when clicking inside modal
+    $modal.on('click', function(e) { e.stopPropagation(); });
+});
+</script>

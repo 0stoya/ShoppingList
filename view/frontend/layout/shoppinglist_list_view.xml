@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+ <update handle="customer_account" />
+    <body>
+        <referenceContainer name="content">
+           <block class="TR\ShoppingList\Block\View"
+       name="tr.shoppinglist.view"
+       template="TR_ShoppingList::list/view.phtml"
+       cacheable="false">
+    <arguments>
+        <argument name="viewModel" xsi:type="object">TR\ShoppingList\ViewModel\ItemProvider</argument>
+    </arguments>
+    <block class="Magento\Catalog\Block\Product\ProductList\Toolbar"
+           name="shopping_list_toolbar"
+           template="Magento_Catalog::product/list/toolbar.phtml">
+        <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"
+        template="TR_ShoppingList::product/list/toolbar.phtml"/>
+    </block>
+    <!-- ADD THIS block: -->
+    <block class="Magento\Theme\Block\Html\Pager"
+           name="shopping_list_pager"
+           as="shopping_list_pager"
+           template="Magento_Theme::html/pager.phtml"/>
+</block>
+        </referenceContainer>
+    </body>
+</page>
+

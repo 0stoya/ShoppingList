@@ -1,0 +1,150 @@
+<?php
+/**
+ * @var \TR\ShoppingList\Block\View $block
+ * @var \TR\ShoppingList\ViewModel\ItemProvider $viewModel
+ */
+$viewModel = $block->getViewModel();
+$list = $viewModel->getCurrentShoppingList();
+// The paginated product collection from the block
+$productCollection = $block->getProductCollection(); 
+?>
+<div class="tr-shopping-list-view">
+    <?php if ($list): ?>
+    <div class="tr-list-title-wrap">
+        <h1 class="tr-list-title"><?= $block->escapeHtml($list->getListName()) ?></h1>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($productCollection && $productCollection->getSize()): ?>
+        <form id="tr-shopping-list-form">
+            <input name="form_key" type="hidden" value="<?= $block->escapeHtmlAttr($block->getFormKey()) ?>">
+
+            <?= $block->getToolbarHtml() ?>
+
+            <div class="tr-list-items">
+                <?php foreach ($productCollection as $product): ?>
+                    <?php // Get the associated item data (for qty, item id) for this product ?>
+                    <?php $item = $block->getItemByProductId($product->getId()); ?>
+                    <?php if (!$item) continue; ?>
+                    
+                    <div class="tr-list-item-card">
+                        <div class="tr-item-select">
+                            <input type="checkbox" name="selected_items[]" class="tr-item-checkbox" value="<?= $block->escapeHtmlAttr($item->getId()) ?>" id="sel_<?= $block->escapeHtmlAttr($item->getId()) ?>">
+                        </div>
+                        <div class="tr-item-img">
+                            <img src="<?= $block->escapeUrl($block->getImageUrl($product)) ?>" alt="<?= $block->escapeHtmlAttr($product->getName()) ?>">
+                        </div>
+                        <div class="tr-item-info">
+                            <a class="tr-item-name" href="<?= $block->escapeUrl($product->getProductUrl()) ?>">
+                                 <?= $block->escapeHtml($product->getMetaTitle() ? $product->getMetaTitle() : $product->getName()) ?>
+                            </a>
+                            <?= $viewModel->getStockStatusHtml($product) ?>
+                            <div class="tr-item-sku">SKU: <?= $block->escapeHtml($product->getSku()) ?></div>
+                            <div class="tr-item-price"><?= $viewModel->getFormattedPrice($viewModel->getCustomerSpecificPrice($product)) ?></div>
+                        </div>
+                        <div class="tr-item-qty">
+                            <label class="tr-visually-hidden" for="qty_<?= $block->escapeHtmlAttr($item->getId()) ?>"><?= $block->escapeHtml(__('Qty')) ?></label>
+                            <input type="number" id="qty_<?= $block->escapeHtmlAttr($item->getId()) ?>" name="qtys[<?= $block->escapeHtmlAttr($item->getId()) ?>]" value="<?= $block->escapeHtmlAttr((int)$item->getQty()) ?>" min="1" class="tr-input-qty">
+                        </div>
+                        <div class="tr-item-actions">
+                            <a href="#" class="tr-btn tr-btn-cart" data-item-id="<?= $block->escapeHtmlAttr($item->getId()) ?>" title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </a>
+                            <a href="<?= $block->escapeUrl($block->getUrl('shoppinglist/item/delete', ['item_id' => $item->getId()])) ?>" class="tr-btn tr-btn-delete" onclick="return confirm('<?= $block->escapeJs($block->escapeHtml(__('Are you sure?'))) ?>')" title="<?= $block->escapeHtmlAttr(__('Remove')) ?>">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+                        <?= $block->getChildHtml('shopping_list_pager'); ?>
+
+
+            <?= $block->getToolbarHtml() ?>
+
+            <div class="tr-list-toolbar">
+                <button type="button" id="tr-btn-update" class="tr-btn-toolb" title="<?= $block->escapeHtmlAttr(__('Update Quantities')) ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.49 15a9 9 0 0 1-14.85 3.36"></path></svg>
+                    <span><?= $block->escapeHtml(__('Update Quantities')) ?></span>
+                </button>
+                <button type="button" id="tr-add-selected-to-cart-btn" class="tr-btn-toolb" title="<?= $block->escapeHtmlAttr(__('Add Selected to Cart')) ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span><?= $block->escapeHtml(__('Add Selected to Cart')) ?></span>
+                </button>
+            </div>
+        </form>
+    <?php else: ?>
+        <div class="tr-list-empty">
+            <span><?= $block->escapeHtml(__('There are no items in this shopping list.')) ?></span>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script type="text/javascript">
+    require(['jquery', 'Magento_Customer/js/customer-data'], function($, customerData) {
+        'use strict';
+        
+        // --- Handler for clicking anywhere on the item card ---
+        $('body').on('click', '.tr-list-item-card', function(event) {
+            // Do nothing if the original click was on a link, button, input, or icon
+            if ($(event.target).is('a, input, button, svg, path')) {
+                return;
+            }
+
+            // Find the checkbox within this card and toggle it
+            var $checkbox = $(this).find('.tr-item-checkbox');
+            $checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
+        });
+
+        // --- Handler to add/remove the highlight class when a checkbox changes ---
+        $('body').on('change', '.tr-item-checkbox', function() {
+            $(this).closest('.tr-list-item-card').toggleClass('is-selected', $(this).prop('checked'));
+        });
+
+        // --- Handler for single item Add to Cart ---
+        $('body').on('click', '.tr-btn-cart', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: '<?= $block->escapeUrl($block->getUrl("shoppinglist/cart/addsingle")) ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    item_id: $(this).data('item-id'),
+                    qty: $(this).closest('.tr-list-item-card').find('.tr-input-qty').val(),
+                    form_key: $('input[name="form_key"]').val()
+                },
+                showLoader: true,
+                success: function() { customerData.reload(['messages', 'cart'], true); }
+            });
+        });
+        
+        // --- Handler for "Update Quantities" button ---
+        $('body').on('click', '#tr-btn-update', function() {
+            $.ajax({
+                url: '<?= $block->escapeUrl($block->getUrl("shoppinglist/item/update")) ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: $('#tr-shopping-list-form').serialize(),
+                showLoader: true,
+                success: function() { customerData.reload(['messages'], true); }
+            });
+        });
+
+        // --- Handler for "Add Selected to Cart" button ---
+        $('body').on('click', '#tr-add-selected-to-cart-btn', function() {
+            $.ajax({
+                url: '<?= $block->escapeUrl($block->getUrl("shoppinglist/cart/addall")) ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: $('#tr-shopping-list-form').serialize(),
+                showLoader: true,
+                success: function(response) {
+                    customerData.reload(['messages', 'cart'], true);
+                    if (response.success) {
+                        $('.tr-item-checkbox:checked').prop('checked', false).trigger('change');
+                    }
+                }
+            });
+        });
+    });
+</script>

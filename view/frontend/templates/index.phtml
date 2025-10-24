@@ -1,0 +1,26 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
+$customerId = $customerSession->getCustomerId();
+$shoppingListCollection = $objectManager->create(\TR\ShoppingList\Model\ResourceModel\ShoppingList\Collection::class)
+    ->addFieldToFilter('customer_id', $customerId);
+?>
+
+<h1><?= __('My Shopping Lists') ?></h1>
+
+<!-- Add Shopping List Form -->
+<form method="post" action="<?= $block->getUrl('tr_shoppinglist/index/create') ?>">
+    <input type="text" name="name" placeholder="<?= __('New List Name') ?>" required>
+    <button type="submit"><?= __('Create') ?></button>
+</form>
+
+<ul>
+    <?php foreach ($shoppingListCollection as $list): ?>
+        <li>
+            <a href="<?= $block->getUrl('tr_shoppinglist/index/view', ['list_id' => $list->getId()]) ?>">
+                <?= $block->escapeHtml($list->getName()) ?>
+            </a>
+        </li>
+    <?php endforeach; ?>
+</ul>

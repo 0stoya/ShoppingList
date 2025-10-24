@@ -1,0 +1,44 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+$listId = (int) $block->getRequest()->getParam('list_id');
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
+$customerId = $customerSession->getCustomerId();
+
+$list = $objectManager->create(\TR\ShoppingList\Model\ShoppingList::class)->load($listId);
+
+if ($list->getCustomerId() != $customerId) {
+    echo __('Not authorized.');
+    return;
+}
+
+$itemCollection = $objectManager->create(\TR\ShoppingList\Model\ResourceModel\Item\Collection::class)
+    ->addFieldToFilter('list_id', $listId);
+
+$productRepository = $objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
+?>
+
+<h1><?= __('Shopping List: %1', $block->escapeHtml($list->getName())) ?></h1>
+
+<ul>
+    <?php foreach ($itemCollection as $item): ?>
+        <?php
+        try {
+            $product = $productRepository->getById($item->getProductId());
+        } catch (\Exception $e) {
+            $product = null;
+        }
+        ?>
+        <?php if ($product): ?>
+            <li>
+                <?= $block->escapeHtml($product->getName()) ?>
+                (x<?= (int)$item->getQty() ?>)
+                <a href="<?= $block->getUrl('tr_shoppinglist/index/remove', ['item_id' => $item->getId()]) ?>">
+                    [<?= __('Remove') ?>]
+                </a>
+            </li>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</ul>
+
+<a href="<?= $block->getUrl('tr_shoppinglist/index/index') ?>"><?= __('Back to My Lists') ?></a>
