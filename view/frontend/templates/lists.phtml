@@ -5,22 +5,47 @@
  */
 $viewModel = $block->getViewModel();
 $lists = $viewModel->getCustomerLists();
+$searchQuery = $viewModel->getSearchQuery();
+$hasSearch = $searchQuery !== '';
 ?>
 <div class="tr-shopping-lists-modern">
     <div class="tr-lists-header">
         <h1><?= $block->escapeHtml(__('My Shopping Lists')) ?></h1>
-        
-        <form class="tr-create-list-form" id="tr-create-list-form" autocomplete="off">
-            <input type="hidden" name="form_key" value="<?= $block->escapeHtml($block->getFormKey()) ?>">
-            <input type="text" name="list_name" id="list_name" class="tr-list-input" placeholder="<?= $block->escapeHtmlAttr(__('Create a New List...')) ?>" required>
-            <button type="button" id="tr-create-list-submit-btn" class="tr-list-create-btn" title="<?= $block->escapeHtmlAttr(__('Create List')) ?>">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span><?= $block->escapeHtml(__('Create')) ?></span>
-            </button>
-        </form>
+        <div class="tr-lists-tools">
+            <form class="tr-search-form" method="get" action="<?= $block->escapeUrl($block->getUrl('shoppinglist/list/index')) ?>">
+                <label class="tr-search-label" for="tr-shopping-list-search"><?= $block->escapeHtml(__('Search Lists')) ?></label>
+                <div class="tr-search-field">
+                    <input
+                        type="search"
+                        name="q"
+                        id="tr-shopping-list-search"
+                        class="tr-search-input"
+                        value="<?= $block->escapeHtmlAttr($searchQuery) ?>"
+                        placeholder="<?= $block->escapeHtmlAttr(__('Search your lists...')) ?>"
+                    >
+                    <button type="submit" class="tr-search-btn" title="<?= $block->escapeHtmlAttr(__('Search')) ?>">
+                        <span><?= $block->escapeHtml(__('Search')) ?></span>
+                    </button>
+                    <?php if ($hasSearch): ?>
+                        <a class="tr-search-reset" href="<?= $block->escapeUrl($block->getUrl('shoppinglist/list/index')) ?>">
+                            <?= $block->escapeHtml(__('Clear')) ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+
+            <form class="tr-create-list-form" id="tr-create-list-form" autocomplete="off">
+                <input type="hidden" name="form_key" value="<?= $block->escapeHtml($block->getFormKey()) ?>">
+                <input type="text" name="list_name" id="list_name" class="tr-list-input" placeholder="<?= $block->escapeHtmlAttr(__('Create a New List...')) ?>" required>
+                <button type="button" id="tr-create-list-submit-btn" class="tr-list-create-btn" title="<?= $block->escapeHtmlAttr(__('Create List')) ?>">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span><?= $block->escapeHtml(__('Create')) ?></span>
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="tr-lists-content">
@@ -56,7 +81,14 @@ $lists = $viewModel->getCustomerLists();
             </div>
         <?php else: ?>
             <div class="tr-lists-empty">
-                <span><?= $block->escapeHtml(__('You have no shopping lists. Use the form above to create one!')) ?></span>
+                <?php if ($hasSearch): ?>
+                    <span><?= $block->escapeHtml(__('No shopping lists match your search for "%1".', $searchQuery)) ?></span>
+                    <a class="tr-search-reset" href="<?= $block->escapeUrl($block->getUrl('shoppinglist/list/index')) ?>">
+                        <?= $block->escapeHtml(__('Clear search')) ?>
+                    </a>
+                <?php else: ?>
+                    <span><?= $block->escapeHtml(__('You have no shopping lists. Use the form above to create one!')) ?></span>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>
