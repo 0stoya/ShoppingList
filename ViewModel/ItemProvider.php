@@ -7,10 +7,7 @@ use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory a
 use Magento\Framework\Registry;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use TR\CustomerPricing\Model\ResourceModel\Price\CollectionFactory as CustomPriceCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-// ✅ This is the correct path for the logger interface
 use Psr\Log\LoggerInterface;
 use Magento\CatalogInventory\Api\StockStateInterface;
 
@@ -21,8 +18,6 @@ class ItemProvider implements ArgumentInterface
     private $registry;
     private $productRepository;
     private $priceHelper;
-    private $customerRepository;
-    private $customPriceCollectionFactory;
     private $productCollectionFactory;
     private $logger;
     private $stockState;
@@ -33,10 +28,8 @@ class ItemProvider implements ArgumentInterface
         Registry $registry,
         ProductRepositoryInterface $productRepository,
         PriceHelper $priceHelper,
-        CustomerRepositoryInterface $customerRepository,
-        CustomPriceCollectionFactory $customPriceCollectionFactory,
         ProductCollectionFactory $productCollectionFactory,
-        StockStateInterface $stockState, 
+        StockStateInterface $stockState,
         LoggerInterface $logger
     ) {
         $this->customerSession = $customerSession;
@@ -44,8 +37,6 @@ class ItemProvider implements ArgumentInterface
         $this->registry = $registry;
         $this->productRepository = $productRepository;
         $this->priceHelper = $priceHelper;
-        $this->customerRepository = $customerRepository;
-        $this->customPriceCollectionFactory = $customPriceCollectionFactory;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->stockState = $stockState;
         $this->logger = $logger;
@@ -64,7 +55,7 @@ class ItemProvider implements ArgumentInterface
         }
         return $this->itemCollectionFactory->create()->addFieldToFilter('list_id', $list->getId());
     }
-    
+
     public function getProductById($productId)
     {
         try {
@@ -79,7 +70,7 @@ class ItemProvider implements ArgumentInterface
     {
         return $this->priceHelper->currency($price, true, false);
     }
-    
+
     public function getCurrentProduct()
     {
         return $this->registry->registry('current_product');
@@ -104,37 +95,20 @@ class ItemProvider implements ArgumentInterface
 
         $collection = $this->productCollectionFactory->create();
         $collection->addIdFilter($productIds);
-        $collection->addAttributeToSelect(['name', 'price', 'small_image', 'units','meta_title']);
+        $collection->addAttributeToSelect(['name', 'price', 'small_image', 'units', 'meta_title']);
 
         return $collection;
     }
 
     public function getCustomerSpecificPrice(\Magento\Catalog\Api\Data\ProductInterface $product): float
     {
-        if (!$this->customerSession->isLoggedIn()) {
-            return (float) $product->getFinalPrice();
-        }
-        try {
-            $customer = $this->customerRepository->getById($this->customerSession->getCustomerId());
-            $customerCodeAttribute = $customer->getCustomAttribute('accord_customer_code');
-            if ($customerCodeAttribute && $customerCodeAttribute->getValue()) {
-                $customerCode = $customerCodeAttribute->getValue();
-                $priceCollection = $this->customPriceCollectionFactory->create();
-                $priceCollection->addFieldToFilter('sku', $product->getSku())
-                                ->addFieldToFilter('accord_customer_code', $customerCode);
-                if ($priceCollection->getSize() > 0) {
-                    return (float) $priceCollection->getFirstItem()->getPrice();
-                }
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Error getting custom price: ' . $e->getMessage());
-        }
         return (float) $product->getFinalPrice();
     }
+
     public function getStockStatusHtml(\Magento\Catalog\Api\Data\ProductInterface $product): string
     {
         $isSalable = $product->isSalable();
-        
+
         if ($isSalable) {
             $class = 'in-stock';
             $label = __('In Stock');
@@ -142,7 +116,7 @@ class ItemProvider implements ArgumentInterface
             $class = 'out-of-stock';
             $label = __('Out of Stock');
         }
-        
+
         return "<div class='stock-status {$class}'><span>{$label}</span></div>";
     }
 }
