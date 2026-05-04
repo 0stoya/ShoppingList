@@ -1,5 +1,5 @@
 <?php
-namespace 0stoya\ShoppingList\Model\ResourceModel\ShoppingList;
+namespace Ostoya\ShoppingList\Model\ResourceModel\ShoppingList;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
@@ -13,8 +13,8 @@ class Collection extends AbstractCollection
     protected function _construct()
     {
         $this->_init(
-            \0stoya\ShoppingList\Model\ShoppingList::class,
-            \0stoya\ShoppingList\Model\ResourceModel\ShoppingList::class
+            \Ostoya\ShoppingList\Model\ShoppingList::class,
+            \Ostoya\ShoppingList\Model\ResourceModel\ShoppingList::class
         );
     }
 

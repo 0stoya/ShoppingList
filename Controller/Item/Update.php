@@ -1,13 +1,13 @@
 <?php
-namespace 0stoya\ShoppingList\Controller\Item;
+namespace Ostoya\ShoppingList\Controller\Item;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use 0stoya\ShoppingList\Model\ShoppingListFactory;
-use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
-use 0stoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
+use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
 use Magento\Framework\Controller\Result\JsonFactory;
 
 class Update extends Action implements HttpPostActionInterface

@@ -1,5 +1,5 @@
 <?php
-namespace 0stoya\ShoppingList\Block;
+namespace Ostoya\ShoppingList\Block;
 
 use Magento\Framework\View\Element\Html\Link\Current;
 use Magento\Framework\View\Element\Template\Context;

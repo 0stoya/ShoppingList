@@ -3,7 +3,7 @@
 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
 $customerId = $customerSession->getCustomerId();
-$shoppingListCollection = $objectManager->create(\0stoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection::class)
+$shoppingListCollection = $objectManager->create(\Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection::class)
     ->addFieldToFilter('customer_id', $customerId);
 ?>
 

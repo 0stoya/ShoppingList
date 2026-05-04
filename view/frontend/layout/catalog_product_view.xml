@@ -3,9 +3,9 @@
     <body>
 
         <referenceContainer name="product.info.form.content.desktop">
-            <block class="0stoya\ShoppingList\Block\Product\View"
+            <block class="Ostoya\ShoppingList\Block\Product\View"
                    name="tr.shoppinglist.product.addto.desktop"
-                   template="0stoya_ShoppingList::product/view/addtolist.phtml"
+                   template="Ostoya_ShoppingList::product/view/addtolist.phtml"
                    after="product.info.addtocart.desktop" />
         </referenceContainer>
     </body>

@@ -3,18 +3,18 @@
  <update handle="customer_account" />
     <body>
         <referenceContainer name="content">
-           <block class="0stoya\ShoppingList\Block\View"
+           <block class="Ostoya\ShoppingList\Block\View"
        name="tr.shoppinglist.view"
-       template="0stoya_ShoppingList::list/view.phtml"
+       template="Ostoya_ShoppingList::list/view.phtml"
        cacheable="false">
     <arguments>
-        <argument name="viewModel" xsi:type="object">0stoya\ShoppingList\ViewModel\ItemProvider</argument>
+        <argument name="viewModel" xsi:type="object">Ostoya\ShoppingList\ViewModel\ItemProvider</argument>
     </arguments>
     <block class="Magento\Catalog\Block\Product\ProductList\Toolbar"
            name="shopping_list_toolbar"
            template="Magento_Catalog::product/list/toolbar.phtml">
         <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"
-        template="0stoya_ShoppingList::product/list/toolbar.phtml"/>
+        template="Ostoya_ShoppingList::product/list/toolbar.phtml"/>
     </block>
     <!-- ADD THIS block: -->
     <block class="Magento\Theme\Block\Html\Pager"

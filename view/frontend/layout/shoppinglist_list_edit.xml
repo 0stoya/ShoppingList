@@ -6,7 +6,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="0stoya\ShoppingList\Block\Edit" name="shoppinglist.list.edit" template="0stoya_ShoppingList::edit.phtml" cacheable="false"/>
+            <block class="Ostoya\ShoppingList\Block\Edit" name="shoppinglist.list.edit" template="Ostoya_ShoppingList::edit.phtml" cacheable="false"/>
         </referenceContainer>
     </body>
 </page>
