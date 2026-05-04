@@ -1,23 +1,42 @@
 # ShoppingList
 
-This repository contains a Magento 2 module allowing customers to maintain multiple shopping lists. Products can be added from the storefront and lists can be imported from the admin area using a CSV file. A simple frontend page displays a customer's lists in a modern table layout.
+Magento 2 module `ostoya/module-shopping-list` (`Ostoya_ShoppingList`) for managing customer shopping lists and importing list items by CSV.
 
 ## Installation
-Copy the contents of `app/code/Ostoya/ShoppingList` into your Magento installation under the same path and run Magento setup commands:
 
-```
+### Composer
+
+```bash
+composer require ostoya/module-shopping-list
 bin/magento module:enable Ostoya_ShoppingList
 bin/magento setup:upgrade
 ```
 
-## CSV format
-The import expects a header row with the following columns:
+### app/code
+
+Copy this repository to `app/code/Ostoya/ShoppingList` and run:
+
+```bash
+bin/magento module:enable Ostoya_ShoppingList
+bin/magento setup:upgrade
+```
+
+## CSV import format
+
+Required header:
 
 ```
-customer_email,list_name,product_sku,qty
+customer_email,list_name,sku,qty
 ```
 
-Each row represents a product to place in a customer's shopping list. Lists are created automatically if they do not already exist.
+Lists are matched by `customer_email + list_name`; missing lists are created automatically. Duplicate SKUs in the same list are merged by increasing quantity.
 
-## Frontend page
-After installation the shopping lists for a logged in customer can be viewed at `/shoppinglist/`. The page uses a lightweight template and CSS file located in `view/frontend` to present lists in a modern responsive table layout.
+## Frontend routes
+
+- `/shoppinglist/`
+- `/shoppinglist/list/view?list_id=...`
+
+## Notes
+
+- Database tables remain `tr_shopping_list` and `tr_shopping_list_item`.
+- No dependency on legacy custom customer pricing modules.

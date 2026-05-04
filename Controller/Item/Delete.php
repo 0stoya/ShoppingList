@@ -1,64 +1,48 @@
 <?php
+declare(strict_types=1);
+
 namespace Ostoya\ShoppingList\Controller\Item;
 
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
 use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
 
-class Delete extends Action implements HttpGetActionInterface
+class Delete extends Action implements HttpPostActionInterface
 {
-    protected $customerSession;
-    protected $itemFactory;
-    protected $itemResource;
-    protected $listFactory;
-
     public function __construct(
         Context $context,
-        CustomerSession $customerSession,
-        ShoppingListItemFactory $itemFactory,
-        ItemResource $itemResource,
-        ShoppingListFactory $listFactory
+        private CustomerSession $customerSession,
+        private ShoppingListItemFactory $itemFactory,
+        private ItemResource $itemResource,
+        private ShoppingListFactory $listFactory,
+        private FormKeyValidator $formKeyValidator
     ) {
-        $this->customerSession = $customerSession;
-        $this->itemFactory = $itemFactory;
-        $this->itemResource = $itemResource;
-        $this->listFactory = $listFactory;
         parent::__construct($context);
     }
 
     public function execute()
     {
-        if (!$this->customerSession->authenticate()) {
+        if (!$this->customerSession->authenticate() || !$this->formKeyValidator->validate($this->getRequest())) {
             return $this->resultRedirectFactory->create()->setPath('shoppinglist/index/index');
         }
-
-        $itemId = (int) $this->getRequest()->getParam('item_id');
-        $item = $this->itemFactory->create()->load($itemId);
-        
+        $item = $this->itemFactory->create()->load((int) $this->getRequest()->getParam('item_id'));
         if (!$item->getId()) {
             $this->messageManager->addErrorMessage(__('The requested item was not found.'));
             return $this->resultRedirectFactory->create()->setPath('shoppinglist/index/index');
         }
-
-        $list = $this->listFactory->create()->load($item->getListId());
-        if ($list->getCustomerId() != $this->customerSession->getCustomerId()) {
+        $list = $this->listFactory->create()->load((int) $item->getListId());
+        if ((int) $list->getCustomerId() !== (int) $this->customerSession->getCustomerId()) {
             $this->messageManager->addErrorMessage(__('You do not have permission to modify this item.'));
             return $this->resultRedirectFactory->create()->setPath('shoppinglist/index/index');
         }
-        
         $resultRedirect = $this->resultRedirectFactory->create()->setPath('shoppinglist/list/view', ['list_id' => $item->getListId()]);
-
-        try {
-            $this->itemResource->delete($item);
-            $this->messageManager->addSuccessMessage(__('The item has been removed from your shopping list.'));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('We can\'t remove the item right now.'));
-        }
-
+        try { $this->itemResource->delete($item); $this->messageManager->addSuccessMessage(__('The item has been removed from your shopping list.')); }
+        catch (\Exception $e) { $this->messageManager->addErrorMessage(__('We can\'t remove the item right now.')); }
         return $resultRedirect;
     }
 }
