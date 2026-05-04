@@ -1,5 +1,5 @@
 <?php
-namespace TR\ShoppingList\Controller\Cart;
+namespace 0stoya\ShoppingList\Controller\Cart;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -7,8 +7,8 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Checkout\Model\Cart;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use TR\ShoppingList\Model\ShoppingListItemFactory;
-use TR\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
 
 class AddSingle extends Action implements HttpPostActionInterface

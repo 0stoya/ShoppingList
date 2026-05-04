@@ -1,5 +1,5 @@
 {
-    "name": "tr/module-shopping-list",
+    "name": "0stoya/module-shopping-list",
     "description": "Shopping List extension",
     "require": {
         "php": ">=8.3",
@@ -10,7 +10,7 @@
     "autoload": {
         "files": ["registration.php"],
         "psr-4": {
-            "TR\\ShoppingList\\": ""
+            "0stoya\\ShoppingList\\": ""
         }
     }
 }

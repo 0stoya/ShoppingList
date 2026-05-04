@@ -1,19 +1,19 @@
 <?php
-namespace TR\ShoppingList\Controller\Adminhtml\Import;
+namespace 0stoya\ShoppingList\Controller\Adminhtml\Import;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\File\Csv as CsvReader;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Catalog\Model\ProductRepository;
-use TR\ShoppingList\Model\ShoppingListFactory;
-use TR\ShoppingList\Model\ShoppingListItemFactory;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 
 class Save extends Action
 {
-    const ADMIN_RESOURCE = 'TR_ShoppingList::shoppinglist';
+    const ADMIN_RESOURCE = '0stoya_ShoppingList::shoppinglist';
 
     protected $csvReader;
     protected $customerFactory;

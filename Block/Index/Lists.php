@@ -1,10 +1,10 @@
 <?php
-namespace TR\ShoppingList\Block\Index;
+namespace 0stoya\ShoppingList\Block\Index;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ShoppingListFactory;
-use TR\ShoppingList\Model\ShoppingListItemFactory;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
 use Magento\Catalog\Model\ProductRepository;
 
 class Lists extends Template

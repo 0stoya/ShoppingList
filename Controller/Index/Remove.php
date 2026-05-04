@@ -1,10 +1,10 @@
 <?php
-namespace TR\ShoppingList\Controller\Index;
+namespace 0stoya\ShoppingList\Controller\Index;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use TR\ShoppingList\Model\ItemFactory;
-use TR\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ItemFactory;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
 use Magento\Customer\Model\Session as CustomerSession;
 
 class Remove extends Action

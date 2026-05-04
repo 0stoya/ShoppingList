@@ -1,12 +1,12 @@
 <?php
-namespace TR\ShoppingList\Controller\List;
+namespace 0stoya\ShoppingList\Controller\List;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Registry;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
 use Magento\Framework\Controller\ResultFactory;
 use Psr\Log\LoggerInterface; // <-- Add this logger
 

@@ -1,9 +1,9 @@
 <?php
-namespace TR\ShoppingList\ViewModel;
+namespace 0stoya\ShoppingList\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
+use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
 use Magento\Framework\Registry; // <-- Add this
 use Magento\Framework\App\RequestInterface;
 
@@ -27,7 +27,7 @@ class ListProvider implements ArgumentInterface
     }
 
     /**
-     * @return \TR\ShoppingList\Model\ResourceModel\ShoppingList\Collection|array
+     * @return \0stoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection|array
      */
     public function getCustomerLists()
     {

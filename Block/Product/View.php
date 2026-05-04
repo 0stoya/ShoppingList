@@ -1,12 +1,12 @@
 <?php
-namespace TR\ShoppingList\Block\Product;
+namespace 0stoya\ShoppingList\Block\Product;
 
 use Magento\Customer\Model\Session;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 // ✅ Use the new, correct ViewModel
-use TR\ShoppingList\ViewModel\ListProvider;
+use 0stoya\ShoppingList\ViewModel\ListProvider;
 
 class View extends Template
 {

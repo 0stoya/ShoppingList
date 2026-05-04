@@ -1,9 +1,9 @@
 <?php
-namespace TR\ShoppingList\Controller\Adminhtml\Import;
+namespace 0stoya\ShoppingList\Controller\Adminhtml\Import;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use TR\ShoppingList\Model\Importer;
+use 0stoya\ShoppingList\Model\Importer;
 
 class Validate extends Action
 {

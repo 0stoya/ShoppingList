@@ -1,12 +1,12 @@
 <?php
-namespace TR\ShoppingList\Controller\List;
+namespace 0stoya\ShoppingList\Controller\List;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ShoppingListFactory;
-use TR\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
 
 class Delete extends Action implements HttpGetActionInterface
 {
