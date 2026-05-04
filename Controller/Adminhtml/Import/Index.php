@@ -1,5 +1,5 @@
 <?php
-namespace 0stoya\ShoppingList\Controller\Adminhtml\Import;
+namespace Ostoya\ShoppingList\Controller\Adminhtml\Import;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -18,7 +18,7 @@ class Index extends Action
     public function execute()
     {
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->setActiveMenu('0stoya_ShoppingList::import');
+        $resultPage->setActiveMenu('Ostoya_ShoppingList::import');
         $resultPage->getConfig()->getTitle()->prepend(__('Import Shopping Lists'));
         return $resultPage;
     }

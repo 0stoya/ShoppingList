@@ -4,7 +4,7 @@
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Customer::customer">
-                    <resource id="0stoya_ShoppingList::import" title="Import Shopping Lists" sortOrder="100" />
+                    <resource id="Ostoya_ShoppingList::import" title="Import Shopping Lists" sortOrder="100" />
                 </resource>
             </resource>
         </resources>

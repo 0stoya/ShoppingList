@@ -1,5 +1,5 @@
 <?php
-namespace 0stoya\ShoppingList\Controller\Cart;
+namespace Ostoya\ShoppingList\Controller\Cart;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -7,8 +7,8 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Checkout\Model\Cart;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
-use 0stoya\ShoppingList\Model\ShoppingListFactory;
+use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
+use Ostoya\ShoppingList\Model\ShoppingListFactory;
 use Magento\Framework\Controller\Result\JsonFactory; // <-- Add this
 
 class AddAll extends Action implements HttpPostActionInterface

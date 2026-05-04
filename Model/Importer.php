@@ -1,15 +1,15 @@
 <?php
-namespace 0stoya\ShoppingList\Model;
+namespace Ostoya\ShoppingList\Model;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use 0stoya\ShoppingList\Model\ShoppingListFactory;
-use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList as ListResource;
-use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
-use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
-use 0stoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
-use 0stoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory; // <-- Add this
+use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList as ListResource;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
+use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory; // <-- Add this
 use Psr\Log\LoggerInterface;
 
 class Importer

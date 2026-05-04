@@ -1,12 +1,12 @@
 <?php
-namespace 0stoya\ShoppingList\Controller\Index;
+namespace Ostoya\ShoppingList\Controller\Index;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Catalog\Model\ProductRepository;
-use 0stoya\ShoppingList\Model\ShoppingListFactory;
-use 0stoya\ShoppingList\Model\ShoppingListItemFactory;
+use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
 use Magento\Framework\Controller\Result\RedirectFactory;
 
 class Add extends Action

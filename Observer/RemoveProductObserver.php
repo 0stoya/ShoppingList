@@ -1,9 +1,9 @@
 <?php
-namespace 0stoya\ShoppingList\Observer;
+namespace Ostoya\ShoppingList\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use 0stoya\ShoppingList\Model\ResourceModel\Item\CollectionFactory as ItemCollectionFactory;
+use Ostoya\ShoppingList\Model\ResourceModel\Item\CollectionFactory as ItemCollectionFactory;
 
 class RemoveProductObserver implements ObserverInterface
 {

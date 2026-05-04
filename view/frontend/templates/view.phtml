@@ -5,14 +5,14 @@ $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
 $customerId = $customerSession->getCustomerId();
 
-$list = $objectManager->create(\0stoya\ShoppingList\Model\ShoppingList::class)->load($listId);
+$list = $objectManager->create(\Ostoya\ShoppingList\Model\ShoppingList::class)->load($listId);
 
 if ($list->getCustomerId() != $customerId) {
     echo __('Not authorized.');
     return;
 }
 
-$itemCollection = $objectManager->create(\0stoya\ShoppingList\Model\ResourceModel\Item\Collection::class)
+$itemCollection = $objectManager->create(\Ostoya\ShoppingList\Model\ResourceModel\Item\Collection::class)
     ->addFieldToFilter('list_id', $listId);
 
 $productRepository = $objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
