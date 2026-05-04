@@ -1,0 +1,29 @@
+type Query {
+    customerShoppingLists(search: String, currentPage: Int = 1, pageSize: Int = 20): CustomerShoppingListsOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\CustomerShoppingLists")
+    customerShoppingList(list_id: Int!, currentPage: Int = 1, pageSize: Int = 20): ShoppingList @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\CustomerShoppingList")
+}
+
+type Mutation {
+    createShoppingList(input: CreateShoppingListInput!): ShoppingListMutationOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\CreateShoppingList")
+    renameShoppingList(input: RenameShoppingListInput!): ShoppingListMutationOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\RenameShoppingList")
+    deleteShoppingList(input: DeleteShoppingListInput!): DeleteShoppingListOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\DeleteShoppingList")
+    addProductToShoppingList(input: AddProductToShoppingListInput!): ShoppingListItemMutationOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\AddProductToShoppingList")
+    updateShoppingListItemQty(input: UpdateShoppingListItemQtyInput!): ShoppingListItemMutationOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\UpdateShoppingListItemQty")
+    removeShoppingListItem(input: RemoveShoppingListItemInput!): RemoveShoppingListItemOutput @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\RemoveShoppingListItem")
+}
+
+type CustomerShoppingListsOutput { items: [ShoppingList!]! total_count: Int! page_info: SearchResultPageInfo }
+type ShoppingList { list_id: Int! list_name: String! items_count: Int! items: [ShoppingListItem!]! created_at: String updated_at: String }
+type ShoppingListItem { item_id: Int! list_id: Int! product_id: Int! sku: String name: String qty: Float! product: ProductInterface @resolver(class: "Ostoya\\ShoppingList\\Model\\Resolver\\ShoppingListItemProduct") }
+type ShoppingListMutationOutput { success: Boolean! message: String list: ShoppingList }
+type ShoppingListItemMutationOutput { success: Boolean! message: String item: ShoppingListItem list: ShoppingList }
+type DeleteShoppingListOutput { success: Boolean! message: String deleted_list_id: Int }
+type RemoveShoppingListItemOutput { success: Boolean! message: String removed_item_id: Int }
+
+input CreateShoppingListInput { list_name: String! }
+input RenameShoppingListInput { list_id: Int! list_name: String! }
+input DeleteShoppingListInput { list_id: Int! }
+input AddProductToShoppingListInput { list_id: Int! product_id: Int sku: String qty: Float = 1 mode: ShoppingListAddMode = SET_OR_INCREMENT }
+enum ShoppingListAddMode { SET_OR_INCREMENT REPLACE_QTY ERROR_IF_EXISTS }
+input UpdateShoppingListItemQtyInput { item_id: Int! qty: Float! }
+input RemoveShoppingListItemInput { item_id: Int! }
