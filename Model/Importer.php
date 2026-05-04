@@ -1,28 +1,29 @@
 <?php
+declare(strict_types=1);
+
 namespace Ostoya\ShoppingList\Model;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList as ListResource;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
-use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory; // <-- Add this
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory;
 use Psr\Log\LoggerInterface;
 
 class Importer
 {
-    protected $customerRepository;
-    protected $productRepository;
-    protected $listFactory;
-    protected $listResource;
-    protected $listCollectionFactory;
-    protected $itemFactory;
-    protected $itemResource;
-    protected $itemCollectionFactory; // <-- Add this
-    protected $logger;
+    private CustomerRepositoryInterface $customerRepository;
+    private ProductRepositoryInterface $productRepository;
+    private ShoppingListFactory $listFactory;
+    private ListResource $listResource;
+    private ListCollectionFactory $listCollectionFactory;
+    private ShoppingListItemFactory $itemFactory;
+    private ItemResource $itemResource;
+    private ItemCollectionFactory $itemCollectionFactory;
+    private LoggerInterface $logger;
 
     public function __construct(
         CustomerRepositoryInterface $customerRepository,
@@ -32,7 +33,7 @@ class Importer
         ListCollectionFactory $listCollectionFactory,
         ShoppingListItemFactory $itemFactory,
         ItemResource $itemResource,
-        ItemCollectionFactory $itemCollectionFactory, // <-- Inject this
+        ItemCollectionFactory $itemCollectionFactory,
         LoggerInterface $logger
     ) {
         $this->customerRepository = $customerRepository;
@@ -42,71 +43,70 @@ class Importer
         $this->listCollectionFactory = $listCollectionFactory;
         $this->itemFactory = $itemFactory;
         $this->itemResource = $itemResource;
-        $this->itemCollectionFactory = $itemCollectionFactory; // <-- Assign this
+        $this->itemCollectionFactory = $itemCollectionFactory;
         $this->logger = $logger;
     }
-public function validate($file): array
-    {
-        if (!isset($file['tmp_name'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Invalid file upload attempt.'));
-        }
 
-        $fileHandler = new \SplFileObject($file['tmp_name'], 'r');
-        $fileHandler->setFlags(\SplFileObject::READ_CSV | \SplFileObject::READ_AHEAD | \SplFileObject::SKIP_EMPTY | \SplFileObject::DROP_NEW_LINE);
-        
-        $headers = $fileHandler->fgetcsv();
+    public function validate(array $file): array
+    {
+        $fileHandler = $this->createFileHandler($file);
+        $headers = (array) $fileHandler->fgetcsv();
         $report = ['errors' => [], 'valid_rows' => 0];
 
         foreach ($fileHandler as $rowNumber => $row) {
-            if (count($row) < count($headers)) continue;
+            if (!is_array($row) || count($row) < count($headers)) {
+                continue;
+            }
+
             $rowData = array_combine($headers, $row);
+            if ($rowData === false) {
+                continue;
+            }
 
+            $rowNum = $rowNumber + 2;
+            $customerEmail = (string) ($rowData['customer_email'] ?? '');
+            $sku = (string) ($rowData['sku'] ?? '');
             $isValid = true;
-            $rowNumForError = $rowNumber + 2;
 
             try {
-                // Validate customer exists
-                $this->customerRepository->get($rowData['customer_email']);
-            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                $report['errors'][] = "Row {$rowNumForError}: Customer with email '{$rowData['customer_email']}' does not exist.";
+                $this->customerRepository->get($customerEmail);
+            } catch (NoSuchEntityException $e) {
+                $report['errors'][] = "Row {$rowNum}: Customer with email '{$customerEmail}' does not exist.";
                 $isValid = false;
             }
 
             try {
-                // Validate SKU exists
-                $this->productRepository->get($rowData['sku']);
-            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                $report['errors'][] = "Row {$rowNumForError}: Product with SKU '{$rowData['sku']}' does not exist.";
+                $this->productRepository->get($sku);
+            } catch (NoSuchEntityException $e) {
+                $report['errors'][] = "Row {$rowNum}: Product with SKU '{$sku}' does not exist.";
                 $isValid = false;
             }
-            
+
             if ($isValid) {
                 $report['valid_rows']++;
             }
         }
+
         return $report;
     }
-    public function import($file)
+
+    public function import(array $file): array
     {
-        if (!isset($file['tmp_name'])) {
-            throw new LocalizedException(__('Invalid file upload attempt.'));
-        }
-        
-        // Use SplFileObject for better memory management with large files
-        $fileHandler = new \SplFileObject($file['tmp_name'], 'r');
-        $fileHandler->setFlags(\SplFileObject::READ_CSV | \SplFileObject::READ_AHEAD | \SplFileObject::SKIP_EMPTY | \SplFileObject::DROP_NEW_LINE);
-        
-        $headers = $fileHandler->fgetcsv();
-        
+        $fileHandler = $this->createFileHandler($file);
+        $headers = (array) $fileHandler->fgetcsv();
         $summary = ['success' => 0, 'skipped' => 0];
         $processedLists = [];
 
         foreach ($fileHandler as $rowNumber => $row) {
-            if (count($row) < count($headers)) {
-                continue; // Skip empty or malformed rows
+            if (!is_array($row) || count($row) < count($headers)) {
+                continue;
             }
 
             $rowData = array_combine($headers, $row);
+            if ($rowData === false) {
+                $summary['skipped']++;
+                continue;
+            }
 
             if (empty($rowData['customer_email']) || empty($rowData['list_name']) || empty($rowData['sku']) || !is_numeric($rowData['qty'])) {
                 $summary['skipped']++;
@@ -114,40 +114,32 @@ public function validate($file): array
             }
 
             try {
-                $customer = $this->customerRepository->get($rowData['customer_email']);
-                $product = $this->productRepository->get($rowData['sku']);
-                
+                $customer = $this->customerRepository->get((string) $rowData['customer_email']);
+                $product = $this->productRepository->get((string) $rowData['sku']);
                 $listCacheKey = $customer->getId() . '-' . $rowData['list_name'];
-                
+
                 if (!isset($processedLists[$listCacheKey])) {
-                    $list = $this->findOrCreateList($customer->getId(), $rowData['list_name']);
-                    $processedLists[$listCacheKey] = $list;
+                    $processedLists[$listCacheKey] = $this->findOrCreateList((int) $customer->getId(), (string) $rowData['list_name']);
                 }
+
                 $list = $processedLists[$listCacheKey];
-                
-                // ✅ START: Logic to handle duplicate SKUs
                 $itemCollection = $this->itemCollectionFactory->create();
-                $itemCollection->addFieldToFilter('list_id', $list->getId())
-                             ->addFieldToFilter('product_id', $product->getId());
+                $itemCollection->addFieldToFilter('list_id', (int) $list->getId())
+                    ->addFieldToFilter('product_id', (int) $product->getId());
 
                 if ($itemCollection->getSize() > 0) {
-                    // Item already exists, so we update its quantity
                     $existingItem = $itemCollection->getFirstItem();
-                    $newQty = $existingItem->getQty() + (float)$rowData['qty'];
-                    $existingItem->setQty($newQty);
+                    $existingItem->setQty((float) $existingItem->getQty() + (float) $rowData['qty']);
                     $this->itemResource->save($existingItem);
                 } else {
-                    // Item is new, so we create it
                     $newItem = $this->itemFactory->create();
-                    $newItem->setListId($list->getId())
-                           ->setProductId($product->getId())
-                           ->setQty((float)$rowData['qty']);
+                    $newItem->setListId((int) $list->getId())
+                        ->setProductId((int) $product->getId())
+                        ->setQty((float) $rowData['qty']);
                     $this->itemResource->save($newItem);
                 }
-                // ✅ END: Logic to handle duplicate SKUs
-                
-                $summary['success']++;
 
+                $summary['success']++;
             } catch (\Exception $e) {
                 $this->logger->error('Import Error on row ' . ($rowNumber + 2) . ': ' . $e->getMessage());
                 $summary['skipped']++;
@@ -156,20 +148,33 @@ public function validate($file): array
 
         return $summary;
     }
-    
-    private function findOrCreateList($customerId, $listName)
+
+    private function findOrCreateList(int $customerId, string $listName): ShoppingList
     {
         $collection = $this->listCollectionFactory->create();
         $collection->addFieldToFilter('customer_id', $customerId)
-                   ->addFieldToFilter('list_name', $listName);
-        
+            ->addFieldToFilter('list_name', $listName);
+
         if ($collection->getSize() > 0) {
             return $collection->getFirstItem();
         }
-        
+
         $list = $this->listFactory->create();
         $list->setCustomerId($customerId)->setListName($listName);
         $this->listResource->save($list);
+
         return $list;
+    }
+
+    private function createFileHandler(array $file): \SplFileObject
+    {
+        if (!isset($file['tmp_name'])) {
+            throw new LocalizedException(__('Invalid file upload attempt.'));
+        }
+
+        $fileHandler = new \SplFileObject($file['tmp_name'], 'r');
+        $fileHandler->setFlags(\SplFileObject::READ_CSV | \SplFileObject::READ_AHEAD | \SplFileObject::SKIP_EMPTY | \SplFileObject::DROP_NEW_LINE);
+
+        return $fileHandler;
     }
 }

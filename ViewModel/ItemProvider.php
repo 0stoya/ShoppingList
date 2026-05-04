@@ -110,8 +110,7 @@ class ItemProvider implements ArgumentInterface
     }
 
     /**
-     * Old TR_CustomerPricing integration removed.
-     * Kept only so existing templates calling this method do not break.
+     * Kept for template compatibility.
      */
     public function getCustomerSpecificPrice(ProductInterface $product): float
     {

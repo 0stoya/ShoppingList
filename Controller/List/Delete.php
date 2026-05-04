@@ -1,53 +1,41 @@
 <?php
+declare(strict_types=1);
+
 namespace Ostoya\ShoppingList\Controller\List;
 
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ShoppingListFactory;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
+use Ostoya\ShoppingList\Model\ShoppingListFactory;
 
-class Delete extends Action implements HttpGetActionInterface
+class Delete extends Action implements HttpPostActionInterface
 {
-    protected $customerSession;
-    protected $shoppingListFactory;
-    protected $shoppingListResource;
-
     public function __construct(
         Context $context,
-        CustomerSession $customerSession,
-        ShoppingListFactory $shoppingListFactory,
-        ShoppingListResource $shoppingListResource
+        private CustomerSession $customerSession,
+        private ShoppingListFactory $shoppingListFactory,
+        private ShoppingListResource $shoppingListResource,
+        private FormKeyValidator $formKeyValidator
     ) {
-        $this->customerSession = $customerSession;
-        $this->shoppingListFactory = $shoppingListFactory;
-        $this->shoppingListResource = $shoppingListResource;
         parent::__construct($context);
     }
 
     public function execute()
     {
         $resultRedirect = $this->resultRedirectFactory->create()->setPath('shoppinglist/index/index');
-        if (!$this->customerSession->authenticate()) {
+        if (!$this->customerSession->authenticate() || !$this->formKeyValidator->validate($this->getRequest())) {
             return $resultRedirect;
         }
-
-        $listId = (int) $this->getRequest()->getParam('list_id');
-        $list = $this->shoppingListFactory->create()->load($listId);
-
-        if (!$list->getId() || $list->getCustomerId() != $this->customerSession->getCustomerId()) {
+        $list = $this->shoppingListFactory->create()->load((int) $this->getRequest()->getParam('list_id'));
+        if (!$list->getId() || (int) $list->getCustomerId() !== (int) $this->customerSession->getCustomerId()) {
             $this->messageManager->addErrorMessage(__('The requested shopping list was not found.'));
             return $resultRedirect;
         }
-
-        try {
-            $this->shoppingListResource->delete($list);
-            $this->messageManager->addSuccessMessage(__('The shopping list has been deleted.'));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('We can\'t delete the shopping list right now.'));
-        }
-        
+        try { $this->shoppingListResource->delete($list); $this->messageManager->addSuccessMessage(__('The shopping list has been deleted.')); }
+        catch (\Exception $e) { $this->messageManager->addErrorMessage(__('We can\'t delete the shopping list right now.')); }
         return $resultRedirect;
     }
 }

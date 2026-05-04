@@ -1,77 +1,62 @@
 <?php
+declare(strict_types=1);
+
 namespace Ostoya\ShoppingList\ViewModel;
 
-use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
-use Magento\Framework\Registry; // <-- Add this
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
 
 class ListProvider implements ArgumentInterface
 {
-    private $customerSession;
-    private $listCollectionFactory;
-    private $registry; // <-- Add this
-    private $request;
+    private CustomerSession $customerSession;
+    private ListCollectionFactory $listCollectionFactory;
+    private Registry $registry;
+    private RequestInterface $request;
 
     public function __construct(
         CustomerSession $customerSession,
         ListCollectionFactory $listCollectionFactory,
-        Registry $registry, // <-- Inject this
+        Registry $registry,
         RequestInterface $request
     ) {
         $this->customerSession = $customerSession;
         $this->listCollectionFactory = $listCollectionFactory;
-        $this->registry = $registry; // <-- Assign this
+        $this->registry = $registry;
         $this->request = $request;
     }
 
-    /**
-     * @return \Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection|array
-     */
     public function getCustomerLists()
     {
         if (!$this->customerSession->isLoggedIn()) {
             return [];
         }
+
+        /** @var Collection $collection */
         $collection = $this->listCollectionFactory->create();
-        $collection->addFieldToFilter('customer_id', $this->customerSession->getCustomerId());
+        $collection->addFieldToFilter('customer_id', (int) $this->customerSession->getCustomerId());
 
         $searchQuery = $this->getSearchQuery();
         if ($searchQuery !== '') {
-            $collection->addFieldToFilter(
-                'list_name',
-                ['like' => '%' . $this->escapeSearchTerm($searchQuery) . '%']
-            );
+            $collection->addFieldToFilter('list_name', ['like' => '%' . $this->escapeSearchTerm($searchQuery) . '%']);
         }
 
         return $collection;
     }
 
-    /**
-     * ✅ NEW METHOD
-     * Get the current product from Magento's registry.
-     *
-     * @return \Magento\Catalog\Model\Product|null
-     */
     public function getCurrentProduct()
     {
         return $this->registry->registry('current_product');
     }
 
-    /**
-     * Return the trimmed search term from the request.
-     */
     public function getSearchQuery(): string
     {
-        $query = (string) $this->request->getParam('q', '');
-
-        return trim($query);
+        return trim((string) $this->request->getParam('q', ''));
     }
 
-    /**
-     * Escape SQL wildcard characters used in LIKE conditions.
-     */
     private function escapeSearchTerm(string $term): string
     {
         return addcslashes($term, '%_');

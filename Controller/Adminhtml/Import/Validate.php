@@ -7,6 +7,7 @@ use Ostoya\ShoppingList\Model\Importer;
 
 class Validate extends Action
 {
+    public const ADMIN_RESOURCE = 'Ostoya_ShoppingList::import';
     private $importer;
 
     public function __construct(Context $context, Importer $importer)

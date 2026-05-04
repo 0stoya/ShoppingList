@@ -7,6 +7,7 @@ use Magento\Framework\View\Result\PageFactory;
 
 class Index extends Action
 {
+    public const ADMIN_RESOURCE = 'Ostoya_ShoppingList::import';
     protected $resultPageFactory;
 
     public function __construct(Context $context, PageFactory $resultPageFactory)

@@ -109,8 +109,15 @@ require(['jquery', 'Magento_Customer/js/customer-data'], function($, customerDat
             showLoader: true
         }).done(function(response) {
             customerData.reload(['messages'], true);
-            $msg.text('<?= $block->escapeHtml(__('Added to your shopping list.')) ?>').css('color', '#008000').show();
-            setTimeout(function() { $overlay.fadeOut(80); }, 850);
+            if (response && response.success) {
+                $msg.text('<?= $block->escapeHtml(__('Added to your shopping list.')) ?>').css('color', '#008000').show();
+                setTimeout(function() { $overlay.fadeOut(80); }, 850);
+            } else {
+                $msg.text((response && response.message) || '<?= $block->escapeHtml(__('Unable to add product to list.')) ?>').css('color', '#c00').show();
+            }
+        }).fail(function() {
+            customerData.reload(['messages'], true);
+            $msg.text('<?= $block->escapeHtml(__('Unable to add product to list.')) ?>').css('color', '#c00').show();
         });
     });
 
