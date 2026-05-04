@@ -1,5 +1,5 @@
 {
-    "name": "Ostoya/module-shopping-list",
+    "name": "ostoya/module-shopping-list",
     "description": "Shopping List extension",
     "require": {
         "php": ">=8.3",
