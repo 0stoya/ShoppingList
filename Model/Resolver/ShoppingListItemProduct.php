@@ -28,12 +28,13 @@ class ShoppingListItemProduct implements ResolverInterface
 
         try {
             $storeId = (int)$context->getExtensionAttributes()->getStore()->getId();
-
-            return $this->productRepository->getById(
-                (int)$value['product_id'], 
-                false, 
+            $product = $this->productRepository->getById(
+                (int)$value['product_id'],
+                false,
                 $storeId
             );
+            // Must return array with 'model' key for Magento GraphQL ProductInterface
+            return array_merge($product->getData(), ['model' => $product]);
         } catch (NoSuchEntityException $e) {
             return null;
         }
