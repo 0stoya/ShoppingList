@@ -27,7 +27,6 @@ class ShoppingListItemProduct implements ResolverInterface
         }
 
         try {
-            // Retrieve the store ID from the GraphQL context to ensure accurate catalog visibility
             $storeId = (int)$context->getExtensionAttributes()->getStore()->getId();
 
             return $this->productRepository->getById(
@@ -36,8 +35,6 @@ class ShoppingListItemProduct implements ResolverInterface
                 $storeId
             );
         } catch (NoSuchEntityException $e) {
-            // The product was deleted, disabled, or is not assigned to the current store view.
-            // Returning null gracefully prevents the entire ShoppingListItem node from crashing.
             return null;
         }
     }
