@@ -1,8 +1,8 @@
 <?php
-namespace TR\ShoppingList\Block;
+namespace 0stoya\ShoppingList\Block;
 
 use Magento\Framework\View\Element\Template;
-use TR\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ShoppingListCollectionFactory;
+use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ShoppingListCollectionFactory;
 use Magento\Customer\Model\Session as CustomerSession;
 
 class ShoppingList extends Template

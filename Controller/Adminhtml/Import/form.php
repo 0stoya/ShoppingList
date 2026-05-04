@@ -1,9 +1,9 @@
 <?php
-namespace TR\ShoppingList\Block\Adminhtml\Import;
+namespace 0stoya\ShoppingList\Block\Adminhtml\Import;
 
 use Magento\Backend\Block\Template;
 
 class Form extends Template
 {
-    protected $_template = 'TR_ShoppingList::import/form.phtml';
+    protected $_template = '0stoya_ShoppingList::import/form.phtml';
 }

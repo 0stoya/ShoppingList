@@ -1,15 +1,15 @@
 <?php
-namespace TR\ShoppingList\Block;
+namespace 0stoya\ShoppingList\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use TR\ShoppingList\ViewModel\ListProvider; // <-- Use the new ViewModel
+use 0stoya\ShoppingList\ViewModel\ListProvider; // <-- Use the new ViewModel
 
 class Lists extends Template
 {
     protected $viewModel;
     /**
-     * @var \TR\ShoppingList\Model\ResourceModel\ShoppingList\Collection|null
+     * @var \0stoya\ShoppingList\Model\ResourceModel\ShoppingList\Collection|null
      */
     protected $listCollection;
     public function __construct(

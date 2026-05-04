@@ -1,9 +1,9 @@
 <?php 
-namespace TR\ShoppingList\Block;
+namespace 0stoya\ShoppingList\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use TR\ShoppingList\ViewModel\ItemProvider;
+use 0stoya\ShoppingList\ViewModel\ItemProvider;
 use Magento\Catalog\Helper\Image as ImageHelper;
 use Magento\Catalog\Model\Product;
 

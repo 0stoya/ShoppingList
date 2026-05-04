@@ -1,5 +1,5 @@
 <?php
-namespace TR\ShoppingList\Model\ResourceModel;
+namespace 0stoya\ShoppingList\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 

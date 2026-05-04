@@ -1,5 +1,5 @@
 <?php
-namespace TR\ShoppingList\Model;
+namespace 0stoya\ShoppingList\Model;
 
 use Magento\Framework\Model\AbstractModel;
 
@@ -7,11 +7,11 @@ use Magento\Framework\Model\AbstractModel;
  * Shopping List Item Model
  *
  * @method int getListId()
- * @method \TR\ShoppingList\Model\ShoppingListItem setListId(int $listId)
+ * @method \0stoya\ShoppingList\Model\ShoppingListItem setListId(int $listId)
  * @method int getProductId()
- * @method \TR\ShoppingList\Model\ShoppingListItem setProductId(int $productId)
+ * @method \0stoya\ShoppingList\Model\ShoppingListItem setProductId(int $productId)
  * @method float getQty()
- * @method \TR\ShoppingList\Model\ShoppingListItem setQty(float $qty)
+ * @method \0stoya\ShoppingList\Model\ShoppingListItem setQty(float $qty)
  */
 class ShoppingListItem extends AbstractModel
 {
@@ -22,6 +22,6 @@ class ShoppingListItem extends AbstractModel
      */
     protected function _construct()
     {
-        $this->_init(\TR\ShoppingList\Model\ResourceModel\ShoppingListItem::class);
+        $this->_init(\0stoya\ShoppingList\Model\ResourceModel\ShoppingListItem::class);
     }
 }

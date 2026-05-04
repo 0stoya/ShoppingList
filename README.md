@@ -3,10 +3,10 @@
 This repository contains a Magento 2 module allowing customers to maintain multiple shopping lists. Products can be added from the storefront and lists can be imported from the admin area using a CSV file. A simple frontend page displays a customer's lists in a modern table layout.
 
 ## Installation
-Copy the contents of `app/code/TR/ShoppingList` into your Magento installation under the same path and run Magento setup commands:
+Copy the contents of `app/code/0stoya/ShoppingList` into your Magento installation under the same path and run Magento setup commands:
 
 ```
-bin/magento module:enable TR_ShoppingList
+bin/magento module:enable 0stoya_ShoppingList
 bin/magento setup:upgrade
 ```
 

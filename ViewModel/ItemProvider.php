@@ -1,9 +1,9 @@
 <?php
-namespace TR\ShoppingList\ViewModel;
+namespace 0stoya\ShoppingList\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory;
+use 0stoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory;
 use Magento\Framework\Registry;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;

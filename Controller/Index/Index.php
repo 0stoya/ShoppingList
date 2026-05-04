@@ -1,5 +1,5 @@
 <?php
-namespace TR\ShoppingList\Controller\Index;
+namespace 0stoya\ShoppingList\Controller\Index;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;

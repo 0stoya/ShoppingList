@@ -1,12 +1,12 @@
 <?php
-namespace TR\ShoppingList\Controller\List;
+namespace 0stoya\ShoppingList\Controller\List;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use TR\ShoppingList\Model\ShoppingListFactory;
-use TR\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
+use 0stoya\ShoppingList\Model\ShoppingListFactory;
+use 0stoya\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
 use Magento\Framework\Controller\Result\JsonFactory;
 
 class Save extends Action implements HttpPostActionInterface
