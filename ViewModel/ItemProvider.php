@@ -1,29 +1,29 @@
 <?php
+declare(strict_types=1);
+
 namespace Ostoya\ShoppingList\ViewModel;
 
-use Magento\Framework\View\Element\Block\ArgumentInterface;
-use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory;
-use Magento\Framework\Registry;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Psr\Log\LoggerInterface;
 use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory;
+use Psr\Log\LoggerInterface;
 
 class ItemProvider implements ArgumentInterface
 {
-    private $customerSession;
-    private $itemCollectionFactory;
-    private $registry;
-    private $productRepository;
-    private $priceHelper;
-    private $productCollectionFactory;
-    private $logger;
-    private $stockState;
+    private ItemCollectionFactory $itemCollectionFactory;
+    private Registry $registry;
+    private ProductRepositoryInterface $productRepository;
+    private PriceHelper $priceHelper;
+    private ProductCollectionFactory $productCollectionFactory;
+    private StockStateInterface $stockState;
+    private LoggerInterface $logger;
 
     public function __construct(
-        CustomerSession $customerSession,
         ItemCollectionFactory $itemCollectionFactory,
         Registry $registry,
         ProductRepositoryInterface $productRepository,
@@ -32,7 +32,6 @@ class ItemProvider implements ArgumentInterface
         StockStateInterface $stockState,
         LoggerInterface $logger
     ) {
-        $this->customerSession = $customerSession;
         $this->itemCollectionFactory = $itemCollectionFactory;
         $this->registry = $registry;
         $this->productRepository = $productRepository;
@@ -50,25 +49,29 @@ class ItemProvider implements ArgumentInterface
     public function getListItems()
     {
         $list = $this->getCurrentShoppingList();
+
         if (!$list) {
             return null;
         }
-        return $this->itemCollectionFactory->create()->addFieldToFilter('list_id', $list->getId());
+
+        return $this->itemCollectionFactory
+            ->create()
+            ->addFieldToFilter('list_id', $list->getId());
     }
 
     public function getProductById($productId)
     {
         try {
-            return $this->productRepository->getById($productId);
+            return $this->productRepository->getById((int) $productId);
         } catch (\Exception $e) {
             $this->logger->error('Error loading product: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function getFormattedPrice($price)
+    public function getFormattedPrice($price): string
     {
-        return $this->priceHelper->currency($price, true, false);
+        return $this->priceHelper->currency((float) $price, true, false);
     }
 
     public function getCurrentProduct()
@@ -86,7 +89,7 @@ class ItemProvider implements ArgumentInterface
         }
 
         foreach ($items as $item) {
-            $productIds[] = $item->getProductId();
+            $productIds[] = (int) $item->getProductId();
         }
 
         if (empty($productIds)) {
@@ -95,28 +98,32 @@ class ItemProvider implements ArgumentInterface
 
         $collection = $this->productCollectionFactory->create();
         $collection->addIdFilter($productIds);
-        $collection->addAttributeToSelect(['name', 'price', 'small_image', 'units', 'meta_title']);
+        $collection->addAttributeToSelect([
+            'name',
+            'price',
+            'small_image',
+            'units',
+            'meta_title'
+        ]);
 
         return $collection;
     }
 
-    public function getCustomerSpecificPrice(\Magento\Catalog\Api\Data\ProductInterface $product): float
+    /**
+     * Old TR_CustomerPricing integration removed.
+     * Kept only so existing templates calling this method do not break.
+     */
+    public function getCustomerSpecificPrice(ProductInterface $product): float
     {
         return (float) $product->getFinalPrice();
     }
 
-    public function getStockStatusHtml(\Magento\Catalog\Api\Data\ProductInterface $product): string
+    public function getStockStatusHtml(ProductInterface $product): string
     {
-        $isSalable = $product->isSalable();
-
-        if ($isSalable) {
-            $class = 'in-stock';
-            $label = __('In Stock');
-        } else {
-            $class = 'out-of-stock';
-            $label = __('Out of Stock');
+        if ($product->isSalable()) {
+            return "<div class='stock-status in-stock'><span>" . __('In Stock') . "</span></div>";
         }
 
-        return "<div class='stock-status {$class}'><span>{$label}</span></div>";
+        return "<div class='stock-status out-of-stock'><span>" . __('Out of Stock') . "</span></div>";
     }
 }
