@@ -64,8 +64,9 @@ class Importer
             }
 
             $rowNum = $rowNumber + 2;
-            $customerEmail = (string) ($rowData['customer_email'] ?? '');
-            $sku = (string) ($rowData['sku'] ?? '');
+            $customerEmail = trim((string) ($rowData['customer_email'] ?? ''));
+            $listName = trim((string) ($rowData['list_name'] ?? ''));
+            $sku = trim((string) ($rowData['sku'] ?? ''));
             $isValid = true;
 
             try {
@@ -82,8 +83,10 @@ class Importer
                 $isValid = false;
             }
 
-            if ($isValid) {
+            if ($isValid && $listName !== '') {
                 $report['valid_rows']++;
+            } elseif ($isValid) {
+                $report['errors'][] = "Row {$rowNum}: List name is required.";
             }
         }
 
@@ -108,18 +111,22 @@ class Importer
                 continue;
             }
 
-            if (empty($rowData['customer_email']) || empty($rowData['list_name']) || empty($rowData['sku']) || !is_numeric($rowData['qty'])) {
+            $customerEmail = trim((string) ($rowData['customer_email'] ?? ''));
+            $listName = trim((string) ($rowData['list_name'] ?? ''));
+            $sku = trim((string) ($rowData['sku'] ?? ''));
+
+            if ($customerEmail === '' || $listName === '' || $sku === '' || !is_numeric($rowData['qty'])) {
                 $summary['skipped']++;
                 continue;
             }
 
             try {
-                $customer = $this->customerRepository->get((string) $rowData['customer_email']);
-                $product = $this->productRepository->get((string) $rowData['sku']);
-                $listCacheKey = $customer->getId() . '-' . $rowData['list_name'];
+                $customer = $this->customerRepository->get($customerEmail);
+                $product = $this->productRepository->get($sku);
+                $listCacheKey = $customer->getId() . '-' . $listName;
 
                 if (!isset($processedLists[$listCacheKey])) {
-                    $processedLists[$listCacheKey] = $this->findOrCreateList((int) $customer->getId(), (string) $rowData['list_name']);
+                    $processedLists[$listCacheKey] = $this->findOrCreateList((int) $customer->getId(), $listName);
                 }
 
                 $list = $processedLists[$listCacheKey];
@@ -128,9 +135,8 @@ class Importer
                     ->addFieldToFilter('product_id', (int) $product->getId());
 
                 if ($itemCollection->getSize() > 0) {
-                    $existingItem = $itemCollection->getFirstItem();
-                    $existingItem->setQty((float) $existingItem->getQty() + (float) $rowData['qty']);
-                    $this->itemResource->save($existingItem);
+                    $summary['skipped']++;
+                    continue;
                 } else {
                     $newItem = $this->itemFactory->create();
                     $newItem->setListId((int) $list->getId())

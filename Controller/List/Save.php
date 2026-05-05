@@ -1,32 +1,22 @@
 <?php
 namespace Ostoya\ShoppingList\Controller\List;
 
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ShoppingListFactory;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Ostoya\ShoppingList\Model\Service\ShoppingListService;
 
 class Save extends Action implements HttpPostActionInterface
 {
-    protected $customerSession;
-    protected $shoppingListFactory;
-    protected $shoppingListResource;
-    protected $jsonFactory;
-
     public function __construct(
         Context $context,
-        CustomerSession $customerSession,
-        ShoppingListFactory $shoppingListFactory,
-        ShoppingListResource $shoppingListResource,
-        JsonFactory $jsonFactory
+        private readonly CustomerSession $customerSession,
+        private readonly ShoppingListService $shoppingListService,
+        private readonly JsonFactory $jsonFactory
     ) {
-        $this->customerSession = $customerSession;
-        $this->shoppingListFactory = $shoppingListFactory;
-        $this->shoppingListResource = $shoppingListResource;
-        $this->jsonFactory = $jsonFactory;
         parent::__construct($context);
     }
 
@@ -40,23 +30,15 @@ class Save extends Action implements HttpPostActionInterface
             return $resultJson->setData($response);
         }
 
-        $listName = trim($this->getRequest()->getParam('list_name'));
-
-        if (empty($listName)) {
-            $response['message'] = __('List name cannot be empty.');
-            return $resultJson->setData($response);
-        }
+        $listName = (string) $this->getRequest()->getParam('list_name');
 
         try {
-            $list = $this->shoppingListFactory->create();
-            $list->setListName($listName)
-                 ->setCustomerId($this->customerSession->getCustomerId());
-            
-            $this->shoppingListResource->save($list);
+            $list = $this->shoppingListService->createList((int) $this->customerSession->getCustomerId(), $listName);
             $response['success'] = true;
-            $response['message'] = __('You created the "%1" shopping list.', $listName);
-            $response['list_id'] = $list->getId();
-
+            $response['message'] = __('You created the "%1" shopping list.', $list->getData('list_name'));
+            $response['list_id'] = (int) $list->getId();
+        } catch (AlreadyExistsException $e) {
+            $response['message'] = __('You already have a shopping list with this name. Please choose a different name.');
         } catch (\Exception $e) {
             $response['message'] = __('We can\'t save the shopping list right now.');
         }
