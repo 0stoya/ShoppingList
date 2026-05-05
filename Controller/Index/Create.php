@@ -1,27 +1,21 @@
 <?php
 namespace Ostoya\ShoppingList\Controller\Index;
 
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Ostoya\ShoppingList\Model\ShoppingListFactory;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Ostoya\ShoppingList\Model\Service\ShoppingListService;
 
 class Create extends Action
 {
-    protected $shoppingListFactory;
-    protected $customerSession;
-    protected $formKeyValidator;
-
     public function __construct(
         Context $context,
-        ShoppingListFactory $shoppingListFactory,
-        CustomerSession $customerSession,
-        FormKeyValidator $formKeyValidator
+        private readonly CustomerSession $customerSession,
+        private readonly FormKeyValidator $formKeyValidator,
+        private readonly ShoppingListService $shoppingListService
     ) {
-        $this->shoppingListFactory = $shoppingListFactory;
-        $this->customerSession = $customerSession;
-        $this->formKeyValidator = $formKeyValidator;
         parent::__construct($context);
     }
 
@@ -36,20 +30,17 @@ class Create extends Action
             return $this->_redirect('*/*/index');
         }
 
-        $name = trim($this->getRequest()->getParam('name'));
-        if (!$name) {
-            $this->messageManager->addErrorMessage(__('List name is required.'));
-            return $this->_redirect('*/*/index');
+        $name = (string) $this->getRequest()->getParam('name');
+
+        try {
+            $this->shoppingListService->createList((int) $this->customerSession->getCustomerId(), $name);
+            $this->messageManager->addSuccessMessage(__('Shopping list created.'));
+        } catch (AlreadyExistsException $e) {
+            $this->messageManager->addErrorMessage(__('You already have a shopping list with this name.'));
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage(__('We can\'t create the shopping list right now.'));
         }
 
-        $list = $this->shoppingListFactory->create();
-        $list->setData([
-            'customer_id' => $this->customerSession->getCustomerId(),
-            'name' => $name
-        ]);
-        $list->save();
-
-        $this->messageManager->addSuccessMessage(__('Shopping list created.'));
         return $this->_redirect('*/*/index');
     }
 }

@@ -13,6 +13,10 @@
         <index referenceId="TR_SHOPPING_LIST_CUSTOMER_ID" indexType="btree">
             <column name="customer_id"/>
         </index>
+        <constraint xsi:type="unique" referenceId="TR_SHOPPING_LIST_CUSTOMER_ID_LIST_NAME_UNQ">
+            <column name="customer_id"/>
+            <column name="list_name"/>
+        </constraint>
     </table>
     <table name="tr_shopping_list_item" resource="default" engine="innodb" comment="TR Shopping List Items">
         <column xsi:type="int" name="item_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Item ID"/>
@@ -25,5 +29,9 @@
         </constraint>
         <constraint xsi:type="foreign" referenceId="TR_SHOPPING_LIST_ITEM_LIST_ID" table="tr_shopping_list_item" column="list_id" referenceTable="tr_shopping_list" referenceColumn="list_id" onDelete="CASCADE"/>
         <constraint xsi:type="foreign" referenceId="TR_SHOPPING_LIST_ITEM_PRODUCT_ID" table="tr_shopping_list_item" column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+            <constraint xsi:type="unique" referenceId="TR_SHOPPING_LIST_ITEM_LIST_ID_PRODUCT_ID_UNQ">
+            <column name="list_id"/>
+            <column name="product_id"/>
+        </constraint>
     </table>
 </schema>

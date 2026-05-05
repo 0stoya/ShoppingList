@@ -1,40 +1,22 @@
 <?php
 namespace Ostoya\ShoppingList\Controller\Item;
 
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Customer\Model\Session as CustomerSession;
-use Ostoya\ShoppingList\Model\ShoppingListFactory;
-use Ostoya\ShoppingList\Model\ShoppingListItemFactory;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem as ItemResource;
-use Ostoya\ShoppingList\Model\ResourceModel\ShoppingListItem\CollectionFactory as ItemCollectionFactory; // <-- Add this
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\GraphQl\Exception\GraphQlInputException;
+use Ostoya\ShoppingList\Model\Service\ShoppingListService;
 
 class Add extends Action implements HttpPostActionInterface
 {
-    protected $customerSession;
-    protected $shoppingListFactory;
-    protected $itemFactory;
-    protected $itemResource;
-    protected $itemCollectionFactory; // <-- Add this
-    protected $jsonFactory;
-
     public function __construct(
         Context $context,
-        CustomerSession $customerSession,
-        ShoppingListFactory $shoppingListFactory,
-        ShoppingListItemFactory $itemFactory,
-        ItemResource $itemResource,
-        ItemCollectionFactory $itemCollectionFactory, // <-- Inject this
-        JsonFactory $jsonFactory
+        private readonly CustomerSession $customerSession,
+        private readonly ShoppingListService $shoppingListService,
+        private readonly JsonFactory $jsonFactory
     ) {
-        $this->customerSession = $customerSession;
-        $this->shoppingListFactory = $shoppingListFactory;
-        $this->itemFactory = $itemFactory;
-        $this->itemResource = $itemResource;
-        $this->itemCollectionFactory = $itemCollectionFactory; // <-- Assign this
-        $this->jsonFactory = $jsonFactory;
         parent::__construct($context);
     }
 
@@ -52,40 +34,22 @@ class Add extends Action implements HttpPostActionInterface
         $productId = (int) $this->getRequest()->getParam('product_id');
         $qty = (float) $this->getRequest()->getParam('qty', 1);
 
-        $list = $this->shoppingListFactory->create()->load($listId);
-
-        if (!$list->getId() || $list->getCustomerId() != $this->customerSession->getCustomerId()) {
-            $response['message'] = __('The selected shopping list was not found.');
-            return $resultJson->setData($response);
-        }
-
         try {
-            // ✅ START: Logic to check for duplicates
-            $existingItems = $this->itemCollectionFactory->create();
-            $existingItems->addFieldToFilter('list_id', $listId)
-                          ->addFieldToFilter('product_id', $productId);
+            $this->shoppingListService->addItem(
+                (int) $this->customerSession->getCustomerId(),
+                $listId,
+                $productId,
+                null,
+                $qty,
+                'ERROR_IF_EXISTS'
+            );
 
-            if ($existingItems->getSize() > 0) {
-                // The item is already in the list
-                $response['message'] = __('This item is already in your "%1" list.', $list->getListName());
-                // We still count this as a "success" for user feedback purposes
-                $response['success'] = true; 
-                $this->messageManager->addWarningMessage($response['message']);
-            } else {
-                // The item is new, so we add it
-                $item = $this->itemFactory->create();
-                $item->setListId($listId)
-                     ->setProductId($productId)
-                     ->setQty($qty);
-
-                $this->itemResource->save($item);
-                
-                $response['success'] = true;
-                $response['message'] = __('The product was added to your "%1" shopping list.', $list->getListName());
-                $this->messageManager->addSuccessMessage($response['message']);
-            }
-            // ✅ END: Logic to check for duplicates
-
+            $response['success'] = true;
+            $response['message'] = __('The product was added to your shopping list.');
+            $this->messageManager->addSuccessMessage($response['message']);
+        } catch (GraphQlInputException $e) {
+            $response['message'] = __('This product is already in the selected shopping list.');
+            $this->messageManager->addWarningMessage($response['message']);
         } catch (\Exception $e) {
             $response['message'] = __('We can\'t add the item to the shopping list right now.');
         }

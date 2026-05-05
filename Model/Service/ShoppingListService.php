@@ -6,6 +6,7 @@ namespace Ostoya\ShoppingList\Model\Service;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Phrase;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList as ShoppingListResource;
 use Ostoya\ShoppingList\Model\ResourceModel\ShoppingList\CollectionFactory as ListCollectionFactory;
@@ -51,9 +52,12 @@ class ShoppingListService
 
     public function createList(int $customerId, string $listName)
     {
+        $validatedName = $this->validateListName($listName);
+        $this->assertUniqueListName($customerId, $validatedName);
+
         $list = $this->shoppingListFactory->create();
         $list->setData('customer_id', $customerId);
-        $list->setData('list_name', $this->validateListName($listName));
+        $list->setData('list_name', $validatedName);
         $this->shoppingListResource->save($list);
         return $list;
     }
@@ -61,7 +65,10 @@ class ShoppingListService
     public function renameList(int $customerId, int $listId, string $listName)
     {
         $list = $this->getCustomerListById($customerId, $listId);
-        $list->setData('list_name', $this->validateListName($listName));
+        $validatedName = $this->validateListName($listName);
+        $this->assertUniqueListName($customerId, $validatedName, (int)$list->getId());
+
+        $list->setData('list_name', $validatedName);
         $this->shoppingListResource->save($list);
         return $list;
     }
@@ -82,12 +89,13 @@ class ShoppingListService
             ->getFirstItem();
 
         if ((int)$existing->getId()) {
-            if ($mode === 'ERROR_IF_EXISTS') {
-                throw new GraphQlInputException(new Phrase('Product already exists in this list.'));
+            if ($mode === 'SET_OR_INCREMENT') {
+                $existing->setData('qty', (float)$existing->getData('qty') + $qty);
+                $this->shoppingListItemResource->save($existing);
+                return $existing;
             }
-            $existing->setData('qty', $mode === 'REPLACE_QTY' ? $qty : ((float)$existing->getData('qty') + $qty));
-            $this->shoppingListItemResource->save($existing);
-            return $existing;
+
+            throw new GraphQlInputException(new Phrase('Product already exists in this list.'));
         }
 
         $item = $this->shoppingListItemFactory->create();
@@ -132,6 +140,21 @@ class ShoppingListService
         return $item;
     }
 
+
+    private function assertUniqueListName(int $customerId, string $listName, ?int $excludeListId = null): void
+    {
+        $collection = $this->listCollectionFactory->create();
+        $collection->addFieldToFilter('customer_id', $customerId)
+            ->addFieldToFilter('list_name', $listName);
+
+        if ($excludeListId !== null) {
+            $collection->addFieldToFilter('list_id', ['neq' => $excludeListId]);
+        }
+
+        if ($collection->getSize() > 0) {
+            throw new AlreadyExistsException(new Phrase('A shopping list with this name already exists.'));
+        }
+    }
     private function validateListName(string $listName): string
     {
         $listName = trim($listName);
