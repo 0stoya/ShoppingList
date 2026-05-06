@@ -1,11 +1,4 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
-    <menu>
-        <add id="Ostoya_ShoppingList::import"
-             title="Import Shopping Lists"
-             module="Ostoya_ShoppingList"
-             sortOrder="90"
-             action="shoppinglist/import"
-             resource="Ostoya_ShoppingList::import"/>
-    </menu>
+    <menu/>
 </config>
